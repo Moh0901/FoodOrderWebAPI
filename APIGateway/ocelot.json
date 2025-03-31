@@ -1,7 +1,4 @@
 {
-  "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:7176"
-  }
   "Routes": [
     // Restaurant Service Routes
     {
