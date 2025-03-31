@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService", "Delivery
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService", "OrderService\OrderService.csproj", "{62058DBD-714C-4EE3-9479-3B03D06BAD7B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIGateway", "APIGateway\APIGateway.csproj", "{1BD85DAA-A3B0-4463-9E77-CA526465F2AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{62058DBD-714C-4EE3-9479-3B03D06BAD7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62058DBD-714C-4EE3-9479-3B03D06BAD7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62058DBD-714C-4EE3-9479-3B03D06BAD7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BD85DAA-A3B0-4463-9E77-CA526465F2AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BD85DAA-A3B0-4463-9E77-CA526465F2AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BD85DAA-A3B0-4463-9E77-CA526465F2AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BD85DAA-A3B0-4463-9E77-CA526465F2AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
