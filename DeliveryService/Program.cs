@@ -16,9 +16,7 @@ builder.Services.AddDbContext<DeliveryContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DeliveryConnection")));
 builder.Services.AddScoped<IDeliverRepository, DeliveryRepository>();
 builder.Services.AddScoped<IDeliveryService, DeliverService>();
-builder.Services.AddSingleton<OrderConsumer>();
-
-
+builder.Services.AddHostedService<OrderConsumer>();
 
 var app = builder.Build();
 
