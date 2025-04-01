@@ -2,103 +2,103 @@
   "Routes": [
     // Restaurant Service Routes
     {
-      "DownstreamPathTemplate": "/api/restaurants",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/Restaurant",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5174
+          "Port": 7261
         }
       ],
-      "UpstreamPathTemplate": "/api/restaurants",
+      "UpstreamPathTemplate": "/restaurants",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/restaurants/{id}",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/Restaurant/{id}",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5174
+          "Port": 7261
         }
       ],
-      "UpstreamPathTemplate": "/api/restaurants/{id}",
+      "UpstreamPathTemplate": "/restaurants/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/restaurants/search",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/Restaurant/search",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5174
+          "Port": 7261
         }
       ],
-      "UpstreamPathTemplate": "/api/restaurants/search",
+      "UpstreamPathTemplate": "/restaurants/search",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/restaurants/{restaurantId}/menu",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/Restaurant/{restaurantId}/menu",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5174
+          "Port": 7261
         }
       ],
-      "UpstreamPathTemplate": "/api/restaurants/{restaurantId}/menu",
+      "UpstreamPathTemplate": "/restaurants/{restaurantId}/menu",
       "UpstreamHttpMethod": [ "Get" ]
     },
 
     // Order Service Routes
     {
-      "DownstreamPathTemplate": "/api/orders",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/Order",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5042
+          "Port": 7128
         }
       ],
-      "UpstreamPathTemplate": "/api/orders",
+      "UpstreamPathTemplate": "/new-order",
       "UpstreamHttpMethod": [ "Post" ]
     },
     {
-      "DownstreamPathTemplate": "/api/orders/{id}",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/Order/{id}",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5042
+          "Port": 7128
         }
       ],
-      "UpstreamPathTemplate": "/api/orders/{id}",
+      "UpstreamPathTemplate": "/orders/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/orders",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/Order",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5042
+          "Port": 7128
         }
       ],
-      "UpstreamPathTemplate": "/api/orders",
+      "UpstreamPathTemplate": "/orders",
       "UpstreamHttpMethod": [ "Get" ]
     },
 
     // Delivery Service Routes
     {
-      "DownstreamPathTemplate": "/api/delivery/assign",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/Delivery/assign",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5144
+          "Port": 7251
         }
       ],
-      "UpstreamPathTemplate": "/api/delivery/assign",
+      "UpstreamPathTemplate": "/delivery/assign",
       "UpstreamHttpMethod": [ "Get" ]
     }
   ]
