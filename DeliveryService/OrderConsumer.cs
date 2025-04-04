@@ -5,74 +5,73 @@ using DeliveryService.Service;
 using Microsoft.Extensions.Hosting;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.Json;
+using DeliveryService.Models;
+using System.Threading.Channels;
 
 namespace DeliveryService
 {
     public class OrderConsumer : BackgroundService
     {
-        private readonly ConnectionFactory _factory;
         private readonly IServiceScopeFactory _scopeFactory;
-        private IModel _channel;
+        private readonly ConnectionFactory _factory;
         private IConnection _connection;
+        private IModel _channel;
 
         public OrderConsumer(IServiceScopeFactory scopeFactory)
         {
-            _factory = new ConnectionFactory() { HostName = "localhost" };
             _scopeFactory = scopeFactory;
+            _factory = new ConnectionFactory() { HostName = "localhost" };
         }
-
-        // Override ExecuteAsync method from BackgroundService
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // Ensure that the ConsumeOrder method will respect cancellation
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                await ConsumeOrder(stoppingToken);
-                await Task.Delay(5000, stoppingToken); // Delay to avoid constant reconnection attempts, can adjust as needed
-            }
-        }
+            using var connection = _factory.CreateConnection();
+            using var channel = connection.CreateModel();
 
-        public async Task ConsumeOrder(CancellationToken cancellationToken)
-        {
-            if (_connection == null || !_connection.IsOpen)
-            {
-                _connection = _factory.CreateConnection();
-            }
+            channel.QueueDeclare("orderQueue", false, false, false, null);
 
-            if (_channel == null || !_channel.IsOpen)
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += async (model, ea) =>
             {
-                _channel = _connection.CreateModel();
-                _channel.QueueDeclare("orderQueue", false, false, false, null);
-            }
-
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += (model, ea) =>
-            {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    // Stop consuming when cancellation is requested
-                    return;
-                }
-
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-                Console.WriteLine("Received Order: " + message);
+                Console.WriteLine(" Received Order JSON: " + message);
 
-                using var scope = _scopeFactory.CreateScope();
-                var deliveryService = scope.ServiceProvider.GetRequiredService<IDeliveryService>();
-                deliveryService.AssignDeliveryPartner(message);
+                try
+                {
+                    // Deserialize JSON into an Order object
+                    var order = JsonSerializer.Deserialize<Order>(message, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true // Allows case-insensitive property names
+                    });
+
+                    if (order == null)
+                    {
+                        Console.WriteLine(" Error: Deserialized order is null.");
+                        return;
+                    }
+
+                    using var scope = _scopeFactory.CreateScope();
+                    var deliveryService = scope.ServiceProvider.GetRequiredService<IDeliveryService>();
+
+                    // Pass the deserialized Order object
+                    await deliveryService.AssignDeliveryPartner(order);
+                }
+                catch (JsonException ex)
+                {
+                    Console.WriteLine($" JSON Deserialization Error: {ex.Message}");
+                }
             };
 
-            _channel.BasicConsume(queue: "orderQueue", autoAck: true, consumer: consumer);
-
-            // Wait until cancellation is requested
-            await Task.Delay(-1, cancellationToken);
+            channel.BasicConsume(queue: "orderQueue", autoAck: true, consumer: consumer);
+            await Task.CompletedTask;
         }
 
-        public override Task StopAsync(CancellationToken cancellationToken)
+        public override void Dispose()
         {
             _channel?.Close();
-            return base.StopAsync(cancellationToken);
+            _connection?.Close();
+            base.Dispose();
         }
     }
 }

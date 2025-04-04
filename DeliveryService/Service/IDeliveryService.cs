@@ -1,7 +1,9 @@
-﻿namespace DeliveryService.Service
+﻿using DeliveryService.Models;
+
+namespace DeliveryService.Service
 {
     public interface IDeliveryService
     {
-        Task AssignDeliveryPartner(string orderMessage);
+        public Task AssignDeliveryPartner(Order order);
     }
 }

@@ -7,10 +7,12 @@ namespace DeliveryService.Repository
     public class DeliveryRepository : IDeliverRepository
     {
         private readonly DeliveryContext _context;
+
         public DeliveryRepository(DeliveryContext context)
         {
             _context = context;
         }
+
         public async Task<DeliveryPartner> AssignPartnerToOrder()
         {
             try
@@ -19,13 +21,15 @@ namespace DeliveryService.Repository
                 if (partner != null)
                 {
                     partner.IsAvailable = false;
-                    _context.SaveChanges();
+                    _context.DeliveryPartners.Update(partner);
+                    await _context.SaveChangesAsync();
                 }
                 return partner;
             }
             catch (Exception ex)
             {
-                throw ex; 
+                Console.WriteLine($"Error assigning delivery partner: {ex.Message}");
+                throw;
             }
         }
     }

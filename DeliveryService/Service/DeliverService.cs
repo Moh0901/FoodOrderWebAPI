@@ -1,8 +1,9 @@
-﻿using DeliveryService.Repository;
+﻿using DeliveryService.Models;
+using DeliveryService.Repository;
 
 namespace DeliveryService.Service
 {
-    public class DeliverService: IDeliveryService
+    public class DeliverService : IDeliveryService
     {
         private readonly IDeliverRepository _deliveryRepository;
 
@@ -11,12 +12,14 @@ namespace DeliveryService.Service
             _deliveryRepository = deliveryRepository;
         }
 
-        public async Task AssignDeliveryPartner(string orderMessage)
+        public async Task AssignDeliveryPartner(Order order)
         {
             var partner = await _deliveryRepository.AssignPartnerToOrder();
             if (partner != null)
             {
-                Console.WriteLine($"Order assigned to delivery partner: {partner.Name}");
+                Console.WriteLine($" Order {order.Id} assigned to: {partner.Name} ({partner.PhoneNumber})");
+
+                // You can also update the order status in DB (if needed)
             }
             else
             {

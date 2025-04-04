@@ -11,11 +11,7 @@
         }
       ],
       "UpstreamPathTemplate": "/restaurants",
-      "UpstreamHttpMethod": [ "Get" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer", 
-        "AllowedScopes": []
-      }
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/Restaurant/{id}",
