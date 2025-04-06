@@ -16,7 +16,7 @@ namespace RestaurantService.Controllers
             _restaurantRepository = restaurantRepository;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllRestaurants")]
         public async Task<ActionResult<IEnumerable<Restaurant>>> GetAllRestaurants()
         {
             var restaurants = await _restaurantRepository.GetAllRestaurantsAsync();

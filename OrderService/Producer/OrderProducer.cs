@@ -24,7 +24,11 @@ namespace OrderService.Producer
             var body = Encoding.UTF8.GetBytes(json);
 
             channel.BasicPublish(exchange: "", routingKey: queueName, basicProperties: null, body: body);
-            Console.WriteLine($" [x] Sent: {json}");
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"✅ [x] Sent to '{queueName}': {json}");
+            Console.ResetColor();
         }
+
     }
 }

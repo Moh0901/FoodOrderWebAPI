@@ -16,6 +16,7 @@ namespace DeliveryService.Controllers
         [HttpGet("assign")]
         public IActionResult AssignDelivery()
         {
+
             var partner = _repository.AssignPartnerToOrder();
             if (partner == null) return NotFound("No available delivery partners.");
             return Ok(partner);

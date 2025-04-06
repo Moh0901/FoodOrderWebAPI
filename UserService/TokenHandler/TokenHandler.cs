@@ -1,12 +1,11 @@
-﻿using APIGateway.Model;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace APIGateway.TokenHandler
+namespace UserService.TokenHandler
 {
-    public class TokenHandler: ITokenHandler
+    public class TokenHandler : ITokenHandler
     {
         private readonly IConfiguration _configuration;
 

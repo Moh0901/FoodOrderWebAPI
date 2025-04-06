@@ -1,4 +1,4 @@
-﻿namespace APIGateway.Model
+﻿namespace UserService.Model
 {
     public class LoginRequestModel
     {

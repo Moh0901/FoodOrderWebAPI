@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using RestaurantService.DatabaseContext;
-using RestaurantService.Repository;
 using System.Text;
+using UserService.TokenHandler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,22 +11,19 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<RestaurantContext>(options => 
-        options.UseSqlServer(builder.Configuration.GetConnectionString("RestauranntConnection")));
-builder.Services.AddTransient<IRestaurantRepository, RestaurantRepository>();
+builder.Services.AddScoped<ITokenHandler, UserService.TokenHandler.TokenHandler>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    .AddJwtBearer("Bearer", options =>
     {
-        object configuration = null;
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes((builder.Configuration["Jwt:Key"]))
-            ),
-            ValidateIssuer = false,
-            ValidateAudience = false
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
 
@@ -43,6 +38,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthorization();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

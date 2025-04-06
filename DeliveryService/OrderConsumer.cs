@@ -8,70 +8,68 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using DeliveryService.Models;
 using System.Threading.Channels;
+using Newtonsoft.Json;
+using JsonException = Newtonsoft.Json.JsonException;
 
 namespace DeliveryService
-{
-    public class OrderConsumer : BackgroundService
     {
-        private readonly IServiceScopeFactory _scopeFactory;
-        private readonly ConnectionFactory _factory;
-        private IConnection _connection;
-        private IModel _channel;
-
-        public OrderConsumer(IServiceScopeFactory scopeFactory)
+        public class OrderConsumer : BackgroundService
         {
-            _scopeFactory = scopeFactory;
-            _factory = new ConnectionFactory() { HostName = "localhost" };
-        }
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            using var connection = _factory.CreateConnection();
-            using var channel = connection.CreateModel();
+            private readonly IServiceScopeFactory _scopeFactory;
+            private readonly ConnectionFactory _factory;
 
-            channel.QueueDeclare("orderQueue", false, false, false, null);
-
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += async (model, ea) =>
+            public OrderConsumer(IServiceScopeFactory scopeFactory)
             {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                Console.WriteLine(" Received Order JSON: " + message);
+                _scopeFactory = scopeFactory;
+                _factory = new ConnectionFactory() { HostName = "localhost" };
+            }
 
-                try
+            protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+            {
+                using var connection = _factory.CreateConnection();
+                using var channel = connection.CreateModel();
+
+                channel.QueueDeclare("orderQueue", durable: false, exclusive: false, autoDelete: false, arguments: null);
+
+                var consumer = new EventingBasicConsumer(channel);
+                consumer.Received += async (model, ea) =>
                 {
-                    // Deserialize JSON into an Order object
-                    var order = JsonSerializer.Deserialize<Order>(message, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true // Allows case-insensitive property names
-                    });
+                    var body = ea.Body.ToArray();
+                    var message = Encoding.UTF8.GetString(body);
+                    Console.WriteLine(" Received Order JSON: " + message);
 
-                    if (order == null)
+                    try
                     {
-                        Console.WriteLine(" Error: Deserialized order is null.");
-                        return;
+                        // Deserialize using Newtonsoft.Json
+                        var order = JsonConvert.DeserializeObject<Order>(message);
+
+                        if (order == null)
+                        {
+                            Console.WriteLine(" Error: Deserialized order is null.");
+                            return;
+                        }
+
+                        using var scope = _scopeFactory.CreateScope();
+                        var deliveryService = scope.ServiceProvider.GetRequiredService<IDeliveryService>();
+
+                        await deliveryService.AssignDeliveryPartner(order);
                     }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine($" JSON Deserialization Error: {ex.Message}");
+                    }
+                };
 
-                    using var scope = _scopeFactory.CreateScope();
-                    var deliveryService = scope.ServiceProvider.GetRequiredService<IDeliveryService>();
+                channel.BasicConsume(queue: "orderQueue", autoAck: true, consumer: consumer);
 
-                    // Pass the deserialized Order object
-                    await deliveryService.AssignDeliveryPartner(order);
-                }
-                catch (JsonException ex)
-                {
-                    Console.WriteLine($" JSON Deserialization Error: {ex.Message}");
-                }
-            };
+                Console.WriteLine(" Listening to RabbitMQ queue: orderQueue...");
 
-            channel.BasicConsume(queue: "orderQueue", autoAck: true, consumer: consumer);
-            await Task.CompletedTask;
-        }
+                await Task.CompletedTask;
+            }
 
-        public override void Dispose()
-        {
-            _channel?.Close();
-            _connection?.Close();
-            base.Dispose();
+            public override void Dispose()
+            {
+                base.Dispose();
+            }
         }
     }
-}

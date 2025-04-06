@@ -1,10 +1,10 @@
-﻿using APIGateway.Model;
-using APIGateway.TokenHandler;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.Data;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using UserService.Model;
+using UserService.TokenHandler;
 
-namespace APIGateway.Controller
+namespace UserService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -8,5 +8,6 @@ namespace DeliveryService.DatabaseContext
         public DeliveryContext(DbContextOptions<DeliveryContext> options) : base(options) { }
 
         public DbSet<DeliveryPartner> DeliveryPartners { get; set; }
+        public DbSet<Order> Orders { get; set; }
     }
 }
